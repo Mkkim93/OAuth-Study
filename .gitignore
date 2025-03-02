@@ -61,3 +61,7 @@ out/
 hs_err_pid*
 replay_pid*
 
+# Ignore all properties files in resources
+src/main/resources/*.properties
+
+

@@ -1,15 +1,16 @@
 package oauth.oauth.service;
 
+import lombok.extern.slf4j.Slf4j;
 import oauth.oauth.dto.*;
 import oauth.oauth.entity.UserEntity;
 import oauth.oauth.repository.UserRepository;
-import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
@@ -25,18 +26,29 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         OAuth2User oAuth2User = super.loadUser(userRequest);
         System.out.println("oAuth2User = " + oAuth2User);
 
-        // 소셜 경로가 naver 인지 google 인지 확인하는 registrationId 선언
+        // 소셜 경로 확인 (naver or google)
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
-
+        log.info("registrationId={}", registrationId);
         OAuth2Response oAuth2Response = null;
 
         if (registrationId.equals("naver")) {
 
             oAuth2Response = new NaverResponse(oAuth2User.getAttributes());
+            log.info("google oAuthResponse email ={}", oAuth2Response.getEmail());
+            log.info("google oAuthResponse name ={}", oAuth2Response.getName());
 
         } else if (registrationId.equals("google")) {
 
             oAuth2Response = new GoogleResponse(oAuth2User.getAttributes());
+
+        } else if (registrationId.equals("kakao")) {
+
+            oAuth2Response = new KakaoResponse(oAuth2User.getAttributes());
+            log.info("kakao oAuthResponse email ={}", oAuth2Response.getEmail());
+            log.info("kakao oAuthResponse name ={}", oAuth2Response.getName());
+            System.out.println("oAuth2Response.getEmail() = " + oAuth2Response.getEmail());
+            System.out.println("oAuth2Response.getName() = " + oAuth2Response.getName());
+            System.out.println("oAuth2Response.getProviderId() = " + oAuth2Response.getProviderId());
 
         } else {
 
